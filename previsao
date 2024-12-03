@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Previsão do Tempo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: WeatherHomePage(),
+    );
+  }
+}
+
+class WeatherHomePage extends StatefulWidget {
+  @override
+  _WeatherHomePageState createState() => _WeatherHomePageState();
+}
+
+class _WeatherHomePageState extends State<WeatherHomePage> {
+  final TextEditingController _controller = TextEditingController();
+  Map<String, dynamic>? _weatherData;
+  String _error = '';
+
+  // Simulação de dados de clima
+  void _getWeather() {
+    setState(() {
+      _error = '';
+      _weatherData = null;
+    });
+
+    String city = _controller.text.trim();
+    if (city.isNotEmpty) {
+      setState(() {
+        _weatherData = {
+          'name': city,
+          'sys': {'country': 'BR'},
+          'main': {'temp': 27, 'humidity': 80},
+          'wind': {'speed': 5},
+        };
+      });
+    } else {
+      setState(() {
+        _error = 'Digite uma cidade!';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Previsão do Tempo'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                labelText: 'Digite o nome da cidade',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _getWeather,
+              child: Text('Buscar'),
+            ),
+            SizedBox(height: 16),
+            if (_error.isNotEmpty)
+              Text(
+                _error,
+                style: TextStyle(color: Colors.red, fontSize: 18),
+              ),
+            if (_weatherData != null) ...[
+              Text(
+                '${_weatherData!['name']} - ${_weatherData!['sys']['country']}',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Temperatura: ${_weatherData!['main']['temp']}°C',
+                style: TextStyle(fontSize: 18),
+              ),
+              Text(
+                'Umidade: ${_weatherData!['main']['humidity']}%',
+                style: TextStyle(fontSize: 18),
+              ),
+              Text(
+                'Vento: ${_weatherData!['wind']['speed']} m/s',
+                style: TextStyle(fontSize: 18),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
